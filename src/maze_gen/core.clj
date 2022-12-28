@@ -5,6 +5,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+ ;; dimensions of the grid graph in terms of vertices
+(def gridgraph-m 20)
+(def gridgraph-n 20)
+
+(def cell-size 25)
+
 (defn grid-edges [m n]
     (let [
         horz-edges
@@ -97,79 +103,27 @@
     )
 )
 
-;; ;; turn spanning tree edges into 2d 1/0 array signifying path cell or block cell
-;; (defn edges-to-cellarray [edges [gridm gridn]]
-;;     ;; (reduce into #{#{1 2 3} #{4 5 6} #{8 9 10}})
-;;     (let [path-cells (reduce into (map edge-times2-interpolate edges))]
-;;         (vec (for [i (range gridm)]
-;;             (vec (for [j (range gridn)]
-;;                 (if (contains? path-cells [i j]) 1 0)
-;;             ))
-;;         ))
-;;     )
-;; )
-
-;; (defn maze [m n]
-;;     (let [edges-st (random-spanning-tree m n)]
-;;         (edges-to-cellarray edges-st [(dec (* 2 m)) (dec (* 2 n))])
-;;     )
-;; )
-
 (defn path-cells [m n]
     (reduce into (map edge-times2-interpolate (random-spanning-tree m n))))
 
 ;;;;;;;;;;;;;;;;;;;;;;
 
 (defn draw-cell [[i j]]
-    (q/rect (* i 25) (* j 25) 25 25))
+    (q/rect (* i cell-size) (* j cell-size) cell-size cell-size))
 
 (defn setup []
-    ; Set frame rate to 30 frames per second.
     (q/background 255)
     (q/frame-rate 30)
     (q/fill 0)
     (q/no-stroke)
-    ; setup function returns initial state. It could contain
-    ; circle color and position, or any other data.
-
-    (dorun (map draw-cell (path-cells 10 10))))
-
-;; (defn update-state [state]
-;;   ; Update sketch state by changing circle color and position.
-;;   {:color (mod (+ (:color state) 0.7) 255)
-;;    :angle (+ (:angle state) 0.1)})
-
-;; (defn draw-maze [maze]
-;;   ; Clear the sketch by filling it with light-grey color.
-;;     (q/background 255)
-;;   ; Set rect color.
-;;     (q/fill 0)
-;;   ;; ; Calculate x and y coordinates of the circle.
-;;   ;; (let [angle (:angle state)
-;;   ;;       x (* 150 (q/cos angle))
-;;   ;;       y (* 150 (q/sin angle))]
-;;   ;;   ; Move origin point to the center of the sketch.
-;;   ;;   (q/with-translation [(/ (q/width) 2)
-;;   ;;                        (/ (q/height) 2)]
-;;   ;;     ; Draw the circle.
-;;   ;;     (q/ellipse x y 100 100))))
-;;     ;; (println maze)
-;;     (for [i (range 10) j (range 10)]
-;;         (when (= (get-in maze [i j]) 1)
-;;             (q/rect (* i 50) (* j 50) 50 50))))
+    (dorun (map draw-cell (path-cells gridgraph-m gridgraph-n))))
 
 (q/defsketch maze-gen
-  :title "MAZE"
-  :size [475 475]
-  ; setup function called only once, during sketch initialization.
-  :setup setup
-  ; update-state is called on each iteration before draw-state.
-  ;; :update update-state
-;;   :draw draw-maze
-  :features [:keep-on-top]
-  ; This sketch uses functional-mode middleware.
-  ; Check quil wiki for more info about middlewares and particularly
-  ; fun-mode.
-  :middleware [m/fun-mode])
+    :title "MAZE"
+    :size (letfn [(pixelcount [x] (* cell-size (dec (* 2 x))))] 
+              [(pixelcount gridgraph-m) (pixelcount gridgraph-n)])
+    :setup setup
+    :features [:keep-on-top]
+    :middleware [m/fun-mode])
 
 (defn -main [& args])
