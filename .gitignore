@@ -1,10 +1,8 @@
-/target
-/classes
+target/classes
+target/stale
 /checkouts
 pom.xml
 pom.xml.asc
-*.jar
 *.class
 /.lein-*
 /.nrepl-port
-!/target/maze-gen-0.1.0-SNAPSHOT-standalone.jar
