@@ -4,6 +4,6 @@ A Quil sketch that generates a random maze (a random spanning tree of a grid gra
 
 The maze goes from the top left corner to the bottom right corner. Walls are white.
 
-To make your own random maze:
+To make your own random maze, run the released .jar file:
 
 `java -jar .\target\maze-gen-0.1.0-SNAPSHOT-standalone.jar`
