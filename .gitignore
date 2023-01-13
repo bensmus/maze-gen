@@ -1,5 +1,4 @@
-target/classes
-target/stale
+target/
 /checkouts
 pom.xml
 pom.xml.asc
