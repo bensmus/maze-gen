@@ -11,6 +11,10 @@
 
 (def cell-size 25)
 
+;; Creates set of set of vectors. The innermost sets represent edges.
+;; E.g: 
+;; user=> (grid-edges 2 2)
+;; #{#{[1 1] [0 1]} #{[1 0] [1 1]} #{[0 0] [0 1]} #{[0 0] [1 0]}}
 (defn grid-edges [m n]
     (let [
         horz-edges
@@ -39,11 +43,14 @@
     (+ (* n p) q)
 )
 
+;; which-tree is a data structure that maps vertices to trees.
+;; It is a map of numbers to numbers.
+;; initially, every vertex is its own tree, maps to its own vertexnumber.
 (defn which-tree-init [vertexcount]
     (zipmap (range vertexcount) (range vertexcount))
 )
 
-(defn cycle-edge [edge which-tree n]
+(defn cycle-edge? [edge which-tree n]
     (let [
         a (first edge)
         b (last edge)
@@ -54,6 +61,8 @@
     ] (= tn-a tn-b))
 )
 
+;; Update the which-tree data structure when an edge is chosen
+;; to reflect that edge unifies vertices into one tree.
 (defn which-tree-update [which-tree chosen-edge n]
     (let [
         a (first chosen-edge) 
@@ -73,7 +82,7 @@
                 spanning-tree
                 ;; find some edge that has endpoints in different trees
                 (let [
-                    noncycle-edges (filter (fn [edge] (not (cycle-edge edge which-tree n))) grid)
+                    noncycle-edges (filter (fn [edge] (not (cycle-edge? edge which-tree n))) grid)
                     chosen-edge (rand-edge noncycle-edges)
                 ] (f 
                     (disj grid-remaining chosen-edge) 
@@ -87,7 +96,8 @@
 
 ;;;;;;;;;;; EDGES-SPANNINGTREE TO CELLARRAY ;;;;;;;;;;;
 
-;; interpolating horizontally or vertically
+;; Interpolating horizontally or vertically.
+;; p: row coordinates. q: column coordinates.
 (defn interpolate [[p1 q1] [p2 q2]]
     (if (= p1 p2)
         [p1 (/ (+ q1 q2) 2)]
@@ -106,7 +116,7 @@
 (defn path-cells [m n]
     (reduce into (map edge-times2-interpolate (random-spanning-tree m n))))
 
-;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;; DRAW THE CELLARRAY ;;;;;;;;;;;
 
 (defn draw-cell [[i j]]
     (q/rect (* i cell-size) (* j cell-size) cell-size cell-size))
